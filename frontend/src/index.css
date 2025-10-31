@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+  
+  /* Ensure all inputs have black text */
+  input,
+  textarea,
+  select {
+    @apply text-gray-900;
+  }
+  
+  /* Style for date input text */
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"] {
+    @apply text-gray-900;
+    color: #111827 !important;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-2 rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-200 font-medium shadow-md hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primary-600 border-2 border-primary-600 px-6 py-2 rounded-lg hover:bg-primary-50 transition-colors duration-200 font-medium;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 bg-white transition-all duration-200;
+  }
+  
+  .input-field::placeholder {
+    @apply text-gray-400;
+  }
+  
+  .input-field:disabled {
+    @apply bg-gray-100 text-gray-500 cursor-not-allowed;
+  }
+  
+  /* Make date inputs have black text */
+  input[type="date"] {
+    @apply text-gray-900;
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    @apply cursor-pointer;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300;
+  }
+  
+  /* Custom animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .bg-gradient-secondary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
