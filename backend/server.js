@@ -16,19 +16,60 @@ const newsletterRoutes = require('./routes/newsletterRoutes');
 const app = express();
 
 // Middleware
-app.use(cors());
+// CORS configuration - allows local development and production frontend
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman)
+    if (!origin) return callback(null, true);
+    
+    // Always allow localhost for development
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return callback(null, true);
+    }
+    
+    // Allow production frontend URL if set
+    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true, // Allow cookies and authorization headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Database connection
 // We are removing the deprecated options here as they can cause warnings in newer Mongoose versions
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/hotel_booking';
+
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(MONGODB_URI)
   .then(() => console.log('✓ MongoDB connected successfully'))
   .catch((err) => {
-    console.error('✗ MongoDB connection error:', err);
-    // Exit application if database fails to connect
-    process.exit(1);
+    console.error('✗ MongoDB connection error:', err.message);
+    
+    // If Atlas fails, try local MongoDB
+    if (MONGODB_URI.includes('mongodb+srv://')) {
+      console.log('⚠ Attempting to connect to local MongoDB...');
+      mongoose
+        .connect('mongodb://localhost:27017/hotel_booking')
+        .then(() => console.log('✓ Connected to local MongoDB successfully'))
+        .catch((localErr) => {
+          console.error('✗ Local MongoDB connection also failed:', localErr.message);
+          console.log('⚠ Server will continue running but database operations will fail');
+          console.log('💡 To fix this:');
+          console.log('   1. Whitelist your IP in MongoDB Atlas, OR');
+          console.log('   2. Install and start local MongoDB: sudo systemctl start mongod');
+        });
+    } else {
+      console.log('⚠ Server will continue running but database operations will fail');
+      console.log('💡 Make sure MongoDB is installed and running: sudo systemctl start mongod');
+    }
   });
 
 // Routes
